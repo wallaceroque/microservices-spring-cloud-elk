@@ -1,3 +1,6 @@
 spring:
   application:
     name: gateway-server
+    
+  zipkin:
+    baseUrl: "http://zipkin-service:9411"

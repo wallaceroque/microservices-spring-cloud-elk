@@ -1,0 +1,167 @@
+version: '2.3'
+
+services:
+
+  gateway:
+    image: gateway
+    build:
+      context: ./gateway-service
+    cpu_percent: 25
+    mem_limit: 300m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 300M
+    environment: 
+      JAVA_OPTIONS: "-Xmx100m"
+    ports:
+      - "8765:8765"
+    networks:
+      infra-nw:
+      microservices-nw:
+    depends_on:
+      - discovery
+      - zipkin
+      - account-service
+      - customer-service
+
+  customer-service:
+    image: customer-service
+    build:
+      context: ./customer-service
+    cpu_percent: 25
+    mem_limit: 300m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 300M
+    environment: 
+      JAVA_OPTIONS: "-Xmx100m"
+    ports:
+      - "3333:3333"
+    networks:
+      infra-nw:
+      logs-nw:
+      microservices-nw:
+    depends_on:
+      - logstash
+      - discovery
+      - zipkin
+      - account-service
+  
+  account-service:
+    image: account-service
+    build:
+      context: ./account-service
+    cpu_percent: 25
+    mem_limit: 300m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 300M
+    environment: 
+      JAVA_OPTIONS: "-Xmx100m"
+    ports:
+      - "2222:2222"
+    networks:
+      infra-nw:
+      logs-nw:
+      microservices-nw:
+    depends_on:
+      - logstash
+      - discovery
+      - zipkin
+  
+  zipkin:
+    image: zipkin
+    build:
+      context: ./zipkin-service
+    cpu_percent: 25
+    mem_limit: 300m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 300M
+    environment: 
+      JAVA_OPTIONS: "-Xmx100m"
+    ports:
+      - "9411:9411"
+    networks:
+      infra-nw:
+        aliases: 
+          - zipkin-service
+    depends_on:
+      - discovery
+  
+  discovery:
+    image: discovery
+    build:
+      context: ./discovery-service
+    cpu_percent: 25
+    mem_limit: 300m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 300M
+    environment: 
+      JAVA_OPTIONS: "-Xmx100m"
+    ports:
+      - "8761:8761"
+    networks:
+      infra-nw:
+  
+  logstash:
+    image: logstash
+    container_name: logstash
+    ports:
+      - "5000:5000"
+    environment:
+      CONFIG: 'input { tcp { port => 5000 codec => "json" } } 
+       output { elasticsearch { hosts => ["elastic"] index => "micro-%{serviceName}"} }'  
+    networks:
+      logs-nw:
+    depends_on:
+      - elastic
+
+  kibana:
+    image: kibana
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    networks:
+      monitor-nw:
+    depends_on:
+      - elastic
+
+  elastic:
+    image: elasticsearch
+    container_name: elastic
+    cpu_percent: 25
+    mem_limit: 300m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 300M
+    environment:
+      ES_JAVA_OPTS: "-Xms100m -Xmx100m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      logs-nw:
+      monitor-nw:
+        aliases:
+          - elasticsearch # Necessário para que o serviço Kibana encontre o do elastic
+        
+networks:
+  infra-nw: 
+  logs-nw:
+  monitor-nw:
+  microservices-nw:
+  

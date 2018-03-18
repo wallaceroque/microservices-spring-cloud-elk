@@ -7,10 +7,9 @@
 	<artifactId>zipkin-service</artifactId>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.4.RELEASE</version>
-		<relativePath />
+		<groupId>pl.piomin</groupId>
+		<artifactId>sample-spring-microservices</artifactId>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -18,21 +17,40 @@
 	</properties>
 	
 	<dependencies>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.cloud</groupId> -->
-<!-- 			<artifactId>spring-cloud-starter-eureka</artifactId> -->
-<!-- 		</dependency> -->
+ 		<dependency>
+ 			<groupId>org.springframework.cloud</groupId>
+ 			<artifactId>spring-cloud-starter-eureka</artifactId>
+ 		</dependency>
 		<dependency>
 			<groupId>io.zipkin.java</groupId>
 			<artifactId>zipkin-server</artifactId>
-			<version>1.18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.zipkin.java</groupId>
 			<artifactId>zipkin-autoconfigure-ui</artifactId>
 			<scope>runtime</scope>
-			<version>1.18.0</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<finalName>zipkin-service</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>pl.piomin.microservices.zipkin.Application</mainClass>
+					<addResources>true</addResources>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
