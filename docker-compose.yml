@@ -7,7 +7,7 @@ services:
     build:
       context: ./gateway-service
     cpu_percent: 25
-    mem_limit: 300m
+    mem_limit: 350m
     #deploy:
     #  resources:
     #    limits:
@@ -31,7 +31,7 @@ services:
     build:
       context: ./customer-service
     cpu_percent: 25
-    mem_limit: 300m
+    mem_limit: 350m
     #deploy:
     #  resources:
     #    limits:
@@ -80,14 +80,14 @@ services:
     build:
       context: ./zipkin-service
     cpu_percent: 25
-    mem_limit: 300m
+    mem_limit: 200m
     #deploy:
     #  resources:
     #    limits:
     #      cpus: '0.25'
     #      memory: 300M
     environment: 
-      JAVA_OPTIONS: "-Xmx100m"
+      JAVA_OPTIONS: "-Xmx80m"
     ports:
       - "9411:9411"
     networks:
@@ -116,21 +116,33 @@ services:
       infra-nw:
   
   logstash:
-    image: logstash
+    image: docker.elastic.co/logstash/logstash-oss:6.2.2
     container_name: logstash
+    cpu_percent: 25
+    mem_limit: 512m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 521m
+    environment: 
+      LS_JAVA_OPTS: "-Xms150m -Xmx150m"
     ports:
       - "5000:5000"
-    environment:
-      CONFIG: 'input { tcp { port => 5000 codec => "json" } } 
-       output { elasticsearch { hosts => ["elastic"] index => "micro-%{serviceName}"} }'  
+    volumes:
+      - ./logstash/pipeline/:/usr/share/logstash/pipeline/
     networks:
       logs-nw:
     depends_on:
       - elastic
 
   kibana:
-    image: kibana
+    image: docker.elastic.co/kibana/kibana:6.2.2
     container_name: kibana
+    cpu_percent: 50
+    mem_limit: 1.5g
+    environment: 
+      XPACK_SECURITY_ENABLED: "false"
     ports:
       - "5601:5601"
     networks:
@@ -139,17 +151,17 @@ services:
       - elastic
 
   elastic:
-    image: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
     container_name: elastic
     cpu_percent: 25
-    mem_limit: 300m
+    mem_limit: 400m
     #deploy:
     #  resources:
     #    limits:
     #      cpus: '0.25'
-    #      memory: 300M
+    #      memory: 400m
     environment:
-      ES_JAVA_OPTS: "-Xms100m -Xmx100m"
+      ES_JAVA_OPTS: "-Xms150m -Xmx150m"
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -157,7 +169,7 @@ services:
       logs-nw:
       monitor-nw:
         aliases:
-          - elasticsearch # Necessário para que o serviço Kibana encontre o do elastic
+          - elasticsearch # Necessário para que o serviço Kibana encontre o serviço do elastic
         
 networks:
   infra-nw: 
