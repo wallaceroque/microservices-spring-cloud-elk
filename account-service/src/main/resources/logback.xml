@@ -6,6 +6,51 @@
 			<pattern>%d{HH:mm:ss.SSS} [%thread, %X{X-B3-TraceId:-},%X{X-B3-SpanId:-}] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
+	
+	<appender name="AMQP"
+		class="org.springframework.amqp.rabbit.logback.AmqpAppender">
+		<host>log-queue</host>
+		<port>5672</port>
+		<username>rabbit</username>
+		<password>carrot</password>
+		
+		<applicationId>account-service</applicationId>
+	    <routingKeyPattern>microservices</routingKeyPattern>
+	    <declareExchange>true</declareExchange>
+	    <exchangeType>direct</exchangeType>
+	    <exchangeName>logs</exchangeName>
+	 
+	    <generateId>true</generateId>
+	    <charset>UTF-8</charset>
+	    <durable>true</durable>
+	    <deliveryMode>PERSISTENT</deliveryMode>
+
+		<!--encoder
+			class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder"-->
+			<layout class="net.logstash.logback.layout.LoggingEventCompositeJsonLayout">
+				<providers>
+					<mdc /> <!-- MDC variables on the Thread will be written as JSON fields -->
+					<context /> <!--Outputs entries from logback's context -->
+					<version /> <!-- Logstash json format version, the @version field in the output -->
+					<logLevel />
+					<loggerName />
+
+					<pattern>
+						<pattern>
+							{
+							"serviceName": "account-service"
+							}
+						</pattern>
+					</pattern>
+
+					<threadName />
+					<message />
+					<logstashMarkers />
+					<stackTrace />
+				</providers>
+			</layout>
+		<!--/encoder-->
+	</appender>
 
 	<appender name="STASH"
 		class="net.logstash.logback.appender.LogstashTcpSocketAppender">
@@ -38,6 +83,6 @@
 
 	<root level="info">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="STASH" />
+		<appender-ref ref="AMQP" />
 	</root>
 </configuration>

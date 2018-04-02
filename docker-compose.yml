@@ -46,7 +46,8 @@ services:
       logs-nw:
       microservices-nw:
     depends_on:
-      - logstash
+      #- logstash
+      - log-queue
       - discovery
       - zipkin
       - account-service
@@ -71,7 +72,8 @@ services:
       logs-nw:
       microservices-nw:
     depends_on:
-      - logstash
+      #- logstash
+      - log-queue
       - discovery
       - zipkin
   
@@ -80,7 +82,7 @@ services:
     build:
       context: ./zipkin-service
     cpu_percent: 25
-    mem_limit: 200m
+    mem_limit: 250m
     #deploy:
     #  resources:
     #    limits:
@@ -115,6 +117,32 @@ services:
     networks:
       infra-nw:
   
+  log-queue:
+    image: rabbitmq:3-management
+    container_name: log-queue
+    cpu_percent: 25
+    mem_limit: 512m
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '0.25'
+    #      memory: 521m
+    #command: 
+    #  - rabbitmq-server &
+    #  - rabbitmqadmin declare queue name=q_logstash durable=true -u rabbit -p carrot &
+    #  - rabbitmqadmin declare binding source=logs destination=q_logstash routing_key=microservices -u rabbit -p carrot
+    environment:
+      RABBITMQ_DEFAULT_USER: "rabbit"
+      RABBITMQ_DEFAULT_PASS: "carrot"
+    ports:
+      - "5672:5672"
+      - "5673:15672" # Management Console
+    networks:
+      logs-nw:
+    depends_on:
+      - logstash
+    
+  
   logstash:
     image: docker.elastic.co/logstash/logstash-oss:6.2.2
     container_name: logstash
@@ -140,7 +168,7 @@ services:
     image: docker.elastic.co/kibana/kibana-oss:6.2.2
     container_name: kibana
     cpu_percent: 50
-    mem_limit: 2g
+    mem_limit: 500m
     #environment: 
       #XPACK_SECURITY_ENABLED: "false"
     ports:
