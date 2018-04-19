@@ -2,8 +2,13 @@ spring:
   application:
     name: customer-service
     
-  zipkin:
-    baseUrl: "http://zipkin-service:9411"
+  #zipkin:
+  #  baseUrl: "http://zipkin-service:9411"
+  rabbitmq:
+    host: ${RABBIT_HOST:log-queue}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:rabbit}
+    password: ${RABBIT_PASSWORD:carrot}
 
   logging:
     pattern:

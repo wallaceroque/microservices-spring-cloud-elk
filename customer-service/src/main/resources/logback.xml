@@ -86,6 +86,6 @@
 
 	<root level="info">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="AMQP" />
+		<!--appender-ref ref="AMQP" /-->
 	</root>
 </configuration>

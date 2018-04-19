@@ -4,6 +4,7 @@ services:
 
   gateway:
     image: gateway
+    container_name: gateway
     build:
       context: ./gateway-service
     cpu_percent: 25
@@ -19,6 +20,7 @@ services:
       - "8765:8765"
     networks:
       infra-nw:
+      logs-nw:
       microservices-nw:
     depends_on:
       - discovery
@@ -28,6 +30,7 @@ services:
 
   customer-service:
     image: customer-service
+    container_name: customer-service
     build:
       context: ./customer-service
     cpu_percent: 25
@@ -54,10 +57,11 @@ services:
   
   account-service:
     image: account-service
+    container_name: account-service
     build:
       context: ./account-service
     cpu_percent: 25
-    mem_limit: 300m
+    mem_limit: 350m
     #deploy:
     #  resources:
     #    limits:
@@ -79,6 +83,7 @@ services:
   
   zipkin:
     image: zipkin
+    container_name: zipkin
     build:
       context: ./zipkin-service
     cpu_percent: 25
@@ -93,6 +98,7 @@ services:
     ports:
       - "9411:9411"
     networks:
+      logs-nw:
       infra-nw:
         aliases: 
           - zipkin-service
@@ -101,6 +107,7 @@ services:
   
   discovery:
     image: discovery
+    container_name: discovery
     build:
       context: ./discovery-service
     cpu_percent: 25
@@ -139,8 +146,8 @@ services:
       - "5673:15672" # Management Console
     networks:
       logs-nw:
-    depends_on:
-      - logstash
+    #depends_on:
+    #  - logstash
     
   
   logstash:
@@ -200,8 +207,12 @@ services:
           - elasticsearch # Necessário para que o serviço Kibana encontre o serviço do elastic
         
 networks:
-  infra-nw: 
+  infra-nw:
+    name: infra-nw
   logs-nw:
+    name: logs-nw
   monitor-nw:
+    name: monitor-nw
   microservices-nw:
+    name: microservices-nw
   

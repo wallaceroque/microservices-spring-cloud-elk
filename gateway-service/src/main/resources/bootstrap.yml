@@ -1,6 +1,10 @@
 spring:
   application:
-    name: gateway-server
-    
-  zipkin:
-    baseUrl: "http://zipkin-service:9411"
+    name: gateway
+  rabbitmq:
+    host: ${RABBIT_HOST:log-queue}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:rabbit}
+    password: ${RABBIT_PASSWORD:carrot}  
+  #zipkin:
+  #  baseUrl: "http://zipkin-service:9411"
