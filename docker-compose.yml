@@ -104,6 +104,7 @@ services:
           - zipkin-service
     depends_on:
       - discovery
+      - elastic
   
   discovery:
     image: discovery
@@ -172,7 +173,8 @@ services:
       - elastic
 
   kibana:
-    image: docker.elastic.co/kibana/kibana-oss:6.2.2
+    #image: docker.elastic.co/kibana/kibana-oss:6.2.2
+    image: kibana:5.0
     container_name: kibana
     cpu_percent: 50
     mem_limit: 500m
@@ -186,7 +188,8 @@ services:
       - elastic
 
   elastic:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+    #image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+    image: elasticsearch:5.0
     container_name: elastic
     cpu_percent: 25
     mem_limit: 400m
@@ -196,10 +199,14 @@ services:
     #      cpus: '0.25'
     #      memory: 400m
     environment:
-      ES_JAVA_OPTS: "-Xms150m -Xmx150m"
+      - "ES_JAVA_OPTS=-Xms150m -Xmx150m"
+      - "cluster.name=dataprev"
+      - "transport.host=0.0.0.0"
+    volumes:
+     - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "9200:9200"
-      - "9300:9300"
+      - "9299:9300"
     networks:
       logs-nw:
       monitor-nw:

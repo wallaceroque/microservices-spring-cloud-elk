@@ -6,3 +6,13 @@ eureka:
     serviceUrl:
       defaultZone: ${DISCOVERY_URL:http://discovery:8761}/eureka/
     registryFetchIntervalSeconds: 5
+    
+zipkin:
+  storage:
+    type: elasticsearch
+    elasticsearch:
+      hosts: elastic:9300
+      cluster: elasticsearch
+      index: zipkin
+      index-shards: 5
+      index-replicas: 1

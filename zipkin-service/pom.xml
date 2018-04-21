@@ -41,6 +41,11 @@
 			<artifactId>zipkin-autoconfigure-ui</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.zipkin.java</groupId>
+			<artifactId>zipkin-autoconfigure-storage-elasticsearch</artifactId>
+			<version>1.19.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
