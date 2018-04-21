@@ -11,8 +11,8 @@ zipkin:
   storage:
     type: elasticsearch
     elasticsearch:
-      hosts: elastic:9300
-      cluster: elasticsearch
+      hosts: elastic:9200
+      #cluster: elasticsearch
       index: zipkin
       index-shards: 5
       index-replicas: 1

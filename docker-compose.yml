@@ -200,13 +200,12 @@ services:
     #      memory: 400m
     environment:
       - "ES_JAVA_OPTS=-Xms150m -Xmx150m"
-      - "cluster.name=dataprev"
-      - "transport.host=0.0.0.0"
-    volumes:
-     - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      #- "cluster.name=dataprev"
+      #- "transport.host=0.0.0.0"
+    #volumes:
+    # - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "9200:9200"
-      - "9299:9300"
     networks:
       logs-nw:
       monitor-nw:
